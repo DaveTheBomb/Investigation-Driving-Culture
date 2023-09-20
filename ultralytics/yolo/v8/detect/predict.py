@@ -31,7 +31,10 @@ object_counter1 = {}
 
 #Horizontal Line
 line = [(100, 500), (1050, 500)] # test 1 video
-#line = [(0, 500), (1280, 500)] # Stock vide
+#line = [(0, 500), (1280, 500)] # Stock video
+
+# Tracking speeds
+speed_line_queue = {}
 
 def HorizontalLine_Before_Detection(img,line,color):
     cv2.line(img, line[0], line[1], color, 3)# Test1 video
@@ -191,6 +194,7 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
         # create new buffer for new object
         if id not in data_deque:  
           data_deque[id] = deque(maxlen= 64)
+          speed_line_queue[id] = []
         color = compute_color_for_labels(object_id[i])
         obj_name = names[object_id[i]]
         label = "#"+'{}{:d}'.format("", id) + " "+ '%s' % (obj_name)
@@ -200,6 +204,8 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
 
         if len(data_deque[id]) >= 2:
           direction = get_direction(data_deque[id][0], data_deque[id][1])
+          object_speed = estimatespeed(data_deque[id][1], data_deque[id][0])
+          speed_line_queue[id].append(object_speed)
           if intersect(data_deque[id][0], data_deque[id][1], line[0], line[1]):
               color = (255, 255, 255)
               HorizontalLine_After_Detection(img,line,color)
@@ -208,6 +214,11 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
                     object_counter[obj_name] = 1
                 else:
                     object_counter[obj_name] += 1
+        
+        try:
+            label = label + " " + str(sum(speed_line_queue[id])//len(speed_line_queue[id])) + "km/hr"
+        except:
+            pass
         
         UI_box(box, img, label=label, color=color, line_thickness=1)
         # draw trail
