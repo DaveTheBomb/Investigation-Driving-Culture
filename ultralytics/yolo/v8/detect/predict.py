@@ -24,6 +24,19 @@ data_deque = {}
 
 deepsort = None
 
+
+object_counter = {}
+
+object_counter1 = {}
+
+def HorizontalLine_Before_Detection(img,line,color):
+    cv2.line(img, line[0], line[1], color, 3)# Test1 video
+    cv2.line(img, line[0], line[1], color, 3)# Stock  video
+def HorizontalLine_After_Detection(img,line,color):
+    cv2.line(img, line[0], line[1],color, 3)  # Test1 video
+    cv2.line(img, line[0], line[1],color, 3)  # Stock video
+
+
 def init_tracker():
     global deepsort
     cfg_deep = get_config()
@@ -108,6 +121,33 @@ def UI_box(x, img, color=None, label=None, line_thickness=None):
 
         cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
 
+def intersect(A,B,C,D):
+    return ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D)
+
+def ccw(A,B,C):
+    return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
+
+
+def get_direction(point1, point2):
+    direction_str = ""
+
+    # calculate y axis direction
+    if point1[1] > point2[1]:
+        direction_str += "South"
+    elif point1[1] < point2[1]:
+        direction_str += "North"
+    else:
+        direction_str += ""
+
+    # calculate x axis direction
+    if point1[0] > point2[0]:
+        direction_str += "East"
+    elif point1[0] < point2[0]:
+        direction_str += "West"
+    else:
+        direction_str += ""
+
+    return direction_str
 
 #DRAW TRAILS LINES 
 def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
