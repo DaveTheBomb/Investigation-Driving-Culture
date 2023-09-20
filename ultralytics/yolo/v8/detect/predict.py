@@ -109,6 +109,48 @@ def UI_box(x, img, color=None, label=None, line_thickness=None):
         cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
 
 
+#DRAW TRAILS LINES 
+def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
+    height, width, _ = img.shape
+    # remove tracked point from buffer if object is lost
+    for key in list(data_deque):
+      if key not in identities:
+        data_deque.pop(key)
+
+    for i, box in enumerate(bbox):
+        x1, y1, x2, y2 = [int(i) for i in box]
+        x1 += offset[0]
+        x2 += offset[0]
+        y1 += offset[1]
+        y2 += offset[1]
+
+        # code to find center of bottom edge
+        center = (int((x2+x1)/ 2), int((y2+y2)/2))
+
+        # get ID of object
+        id = int(identities[i]) if identities is not None else 0
+
+        # create new buffer for new object
+        if id not in data_deque:  
+          data_deque[id] = deque(maxlen= 64)
+        color = compute_color_for_labels(object_id[i])
+        obj_name = names[object_id[i]]
+        label = "#"+'{}{:d}'.format("", id) + " "+ '%s' % (obj_name)
+
+        # add center to buffer
+        data_deque[id].appendleft(center)
+        UI_box(box, img, label=label, color=color, line_thickness=1)
+        # draw trail
+        for i in range(1, len(data_deque[id])):
+            # check if on buffer value is none
+            if data_deque[id][i - 1] is None or data_deque[id][i] is None:
+                continue
+            # generate dynamic thickness of trails
+            thickness = int(np.sqrt(64 / float(i + i)) * 1.5)
+            # draw trails
+            cv2.line(img, data_deque[id][i - 1], data_deque[id][i], color, thickness)
+    return img
+
 
 class DetectionPredictor(BasePredictor):
 
