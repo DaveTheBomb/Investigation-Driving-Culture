@@ -19,6 +19,22 @@ from deep_sort_pytorch.deep_sort import DeepSort
 from collections import deque
 import numpy as np
 
+palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
+data_deque = {}
+
+deepsort = None
+
+def init_tracker():
+    global deepsort
+    cfg_deep = get_config()
+    cfg_deep.merge_from_file("deep_sort_pytorch/configs/deep_sort.yaml")
+
+    deepsort= DeepSort(cfg_deep.DEEPSORT.REID_CKPT,
+                            max_dist=cfg_deep.DEEPSORT.MAX_DIST, min_confidence=cfg_deep.DEEPSORT.MIN_CONFIDENCE,
+                            nms_max_overlap=cfg_deep.DEEPSORT.NMS_MAX_OVERLAP, max_iou_distance=cfg_deep.DEEPSORT.MAX_IOU_DISTANCE,
+                            max_age=cfg_deep.DEEPSORT.MAX_AGE, n_init=cfg_deep.DEEPSORT.N_INIT, nn_budget=cfg_deep.DEEPSORT.NN_BUDGET,
+                            use_cuda=True)
+
 
 class DetectionPredictor(BasePredictor):
 
@@ -96,5 +112,4 @@ class DetectionPredictor(BasePredictor):
             draw_boxes(im0, bbox_xyxy, self.model.names, object_id,identities)
 
         return log_string
-
 
