@@ -40,6 +40,16 @@ def HorizontalLine_After_Detection(img,line,color):
     cv2.line(img, line[0], line[1],color, 3)  # Test1 video
     cv2.line(img, line[0], line[1],color, 3)  # Stock video
 
+def estimatespeed(Location1, Location2):
+    #Euclidean Distance Formula
+    d_pixel = math.sqrt(math.pow(Location2[0] - Location1[0], 2) + math.pow(Location2[1] - Location1[1], 2))
+    # defining thr pixels per meter
+    ppm = 8
+    d_meters = d_pixel/ppm
+    time_constant = 15*3.6
+    #distance = speed/time
+    speed = d_meters * time_constant
+    return int(speed)
 
 def init_tracker():
     global deepsort
