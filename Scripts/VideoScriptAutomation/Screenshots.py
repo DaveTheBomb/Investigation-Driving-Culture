@@ -3,35 +3,41 @@ from PIL import ImageGrab
 import time
 import os
 
+class ScreenshotCapturer:
+    def __init__(self, num_screenshots, delay_between_screenshots, save_directory):
+        self.num_screenshots = num_screenshots
+        self.delay_between_screenshots = delay_between_screenshots
+        self.save_directory = save_directory
 
-screen_setup_waiting = 20
-time.sleep(screen_setup_waiting)
+    def create_save_directory(self):
+        os.makedirs(self.save_directory, exist_ok=True)
 
+    def capture_screenshots(self):
+        self.create_save_directory()
 
-# Number of screenshots to capture
-num_screenshots = 100
+        for i in range(self.num_screenshots):
+            # Wait for the specified delay before taking each screenshot
+            time.sleep(self.delay_between_screenshots)
 
-# Delay between each screenshot (in seconds)
-delay_between_screenshots = 0.005  # 5 milliseconds
+            # Capture a screenshot of the entire screen
+            screenshot = ImageGrab.grab()
 
-# Specify the directory where you want to save the screenshots
-save_directory = "C:/Users/1892513/Desktop/INGODWETRUST/data"
+            # Save the screenshot with a numbered filename in the specified directory
+            filename = os.path.join(self.save_directory, f"screenshot_{i + 1}.png")
+            screenshot.save(filename)
 
-# Ensure the directory exists; create it if it doesn't
-os.makedirs(save_directory, exist_ok=True)
+            print(f"Screenshot {i + 1} saved as {filename}")
 
-for i in range(num_screenshots):
-    # Wait for the specified delay before taking each screenshot
-    time.sleep(delay_between_screenshots)
+if __name__ == "__main__":
+    screen_setup_waiting = 10
+    num_screenshots = 10
+    delay_between_screenshots = 0.005  # 5 milliseconds
+    save_directory = "C:/Users/1892513/Desktop/INGODWETRUST/data"
 
-    # Capture a screenshot of the entire screen
-    screenshot = ImageGrab.grab()
+    screenshot_capturer = ScreenshotCapturer(num_screenshots, delay_between_screenshots, save_directory)
 
-    # Save the screenshot with a numbered filename in the specified directory
-    filename = os.path.join(save_directory, f"screenshot_{i + 1}.png")
-    screenshot.save(filename)
+    # Wait for screen setup
+    time.sleep(screen_setup_waiting)
 
-    print(f"Screenshot {i + 1} saved as {filename}")
-
-# Optionally, you can display the last screenshot captured
-# screenshot.show()
+    # Capture and save screenshots
+    screenshot_capturer.capture_screenshots()
