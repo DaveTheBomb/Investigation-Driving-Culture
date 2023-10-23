@@ -102,6 +102,19 @@ Roadline = [(300, 600), (430, 400), (860, 400), (1050, 600)] #Footage 1
 #Roadline = [(550, 440), (635, 400), (1050, 430), (1010, 480)] # Footage 3
 #Roadline = [(750, 570), (730, 400), (780, 400), (850, 570)] # Footage 4
 
+#GRID-BASED METHODS 
+#Footage 1 
+lines_to_draw = [
+    ((300, 600), (1050, 600)),
+    ((350, 550), (1000, 550)),
+     ((380, 500), (950, 500)),
+     ((410, 450), (920, 450)),
+     ((440, 400), (890, 400)),
+     ((470, 350), (860, 350)),
+     ((475, 300), (830, 300)),
+     ((485, 250), (800, 250)),
+     ((510, 200), (770, 200)),]
+
 distance_between_lines = 20  # Adjust this value as needed
 
 import math
@@ -136,6 +149,7 @@ def estimatespeed(direction):
     # Convert speed to kilometers per hour (km/h)
     speed_kmph = speed * 3.6
     return speed_kmph
+
 
 def init_tracker():
     global deepsort
