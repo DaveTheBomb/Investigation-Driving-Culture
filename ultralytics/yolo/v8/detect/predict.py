@@ -316,7 +316,8 @@ def determine_headlight_status(img, x1, y1, x2, y2, direction):
     text_x = int((x1 + x2) / 2)
     text_y = y2 + 20
     cv2.putText(img, headlight_status, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.3, color, 1, lineType=cv2.LINE_AA)
-
+###########################################################################################################
+ #                                           DETECT LAW VIOLATIONS 
 def capture_speed_vehicle(speed, id, img, x1, y1, x2, y2, limit):
     exceeded = 0
     if speed < limit:
@@ -343,6 +344,23 @@ def capture_speed_vehicle(speed, id, img, x1, y1, x2, y2, limit):
             exceeded += 1
     
     return exceeded
+
+def capture_red_light_violations(id, img, x1, y1, x2, y2):
+    redlight_violations_folder_name = "RedLight_Violations_Record"
+
+    if not os.path.exists(redlight_violations_folder_name):
+        os.makedirs(redlight_violations_folder_name)
+        os.makedirs(os.path.join(redlight_violations_folder_name, "violated"))
+
+    
+    # Crop the region around the detected object
+    crop_img = img[y1:y2, x1:x2].copy()
+
+    # Save the cropped image as a violation
+    filename = f"{redlight_violations_folder_name}/violated/vehicle_{id}.png"
+    cv2.imwrite(filename, crop_img)
+    return
+
 ##########################################################################################
 #Detecting the traffic light 
 def detect_traffic_light_color(image, x1, y1, x2, y2):
@@ -550,13 +568,30 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
                 cv2.putText(img, f'Light: {traffic_light_color}', (x1, y2 +15), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
                             (255, 255, 255), 1, lineType=cv2.LINE_AA)
 
-
+        zone = [(70, 170), (500, 700)] #For footage 2
         if len(data_deque[id]) >= 2:
           direction = get_direction(data_deque[id][0], data_deque[id][1])
           #object_speed = estimatespeed(data_deque[id][1], data_deque[id][0])
           # Call the estimatespeed function within draw_boxes
           #_, distance = get_region_and_distance(center, Roadline)
           #object_speed = estimatespeed(direction, distance)
+          if intersect(data_deque[id][0][0], data_deque[id][1][0], zone[0], zone[1]) :
+               # Check if the traffic light is red
+               if traffic_light_color == "Red":
+                   # Calculate the position to print " Broke Law" next to the vehicle
+                   text_x = int((x1 + x2) / 2)
+                   text_y = y2 + 50  # Adjust the Y coordinate for proper positioning
+                   # Draw "Broke Law" text next to the vehicle
+                   #cv2.putText(img, "Broke Law", (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 255), 1,lineType=cv2.LINE_AA)
+                   #Capture Law Breakers
+                   capture_red_light_violations(id, img, x1, y1, x2, y2) 
+               else:
+                   text_x = int((x1 + x2) / 2)
+                   text_y = y2 + 50  # Adjust the Y coordinate for proper positioning
+                   cv2.putText(img, "Didnt Break Law", (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, lineType=cv2.LINE_AA)
+      
+          
+          
           object_speed = estimatespeed(data_deque[id][1][0], data_deque[id][0][0], data_deque[id][1][1], data_deque[id][0][1])
           if obj_name != "traffic light":
              determine_headlight_status(img, x1, y1, x2, y2, direction)
