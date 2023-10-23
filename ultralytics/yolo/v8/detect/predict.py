@@ -216,6 +216,11 @@ def estimatespeed(direction, dist):
 
 """
 import math
+
+speed_limit = 50 #km/hr footage 1
+#speed_limit = 72 #km/hr footage 2
+#speed_limit = 40 #km/hr footage 3
+#speed_limit = 56 #km/hr footage 4
 def estimatespeed(Location1, Location2, img, starting_time, ending_time):
      
      # Calculate the Euclidean distance between Location1 and Location2
@@ -312,6 +317,33 @@ def determine_headlight_status(img, x1, y1, x2, y2, direction):
     text_y = y2 + 20
     cv2.putText(img, headlight_status, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.3, color, 1, lineType=cv2.LINE_AA)
 
+def capture_speed_vehicle(speed, id, img, x1, y1, x2, y2, limit):
+    exceeded = 0
+    if speed < limit:
+        return exceeded
+
+    traffic_record_folder_name = "TrafficRecord"
+    
+    if not os.path.exists(traffic_record_folder_name):
+        os.makedirs(traffic_record_folder_name)
+        os.makedirs(traffic_record_folder_name + "//exceeded")
+    
+    speed_record_file_location = traffic_record_folder_name + "//SpeedRecord.txt"
+    
+    # Create or append to the speed record file
+    with open(speed_record_file_location, "a") as filet:
+        if speed > limit:
+            file2 = traffic_record_folder_name + '//exceeded//' + str(id) + '.jpg'
+            
+            # Crop the region around the detected object
+            crop_img = img[y1:y2, x1:x2].copy()
+            
+            cv2.imwrite(file2, crop_img)
+            filet.write(str(id) + " \t " + str(speed) + "<---exceeded\n")
+            exceeded += 1
+    
+    return exceeded
+##########################################################################################
 #Detecting the traffic light 
 def detect_traffic_light_color(image, x1, y1, x2, y2):
     # Crop the region of interest (ROI) from the image using (x1, y1, x2, y2)
@@ -530,6 +562,10 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
              determine_headlight_status(img, x1, y1, x2, y2, direction)
           
           speed_line_queue[id].append(object_speed)
+
+          #Capture speed limit violations 
+          if obj_name != "traffic light":
+            capture_speed_vehicle(object_speed, id, img, x1, y1, x2, y2, speed_limit)
           if intersect(data_deque[id][0], data_deque[id][1], line[0], line[1]):
               color = (255, 255, 255)
               HorizontalLine_After_Detection(img,line,color)
