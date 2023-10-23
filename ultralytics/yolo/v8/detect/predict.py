@@ -52,7 +52,11 @@ def draw_transparent_yellow_rhombus(img):
     #vertices = [(300, 600), (430, 400), (860, 400), (1050, 600)]
     
     #Footage 2
-    vertices= [(120, 200), (75, 150), (560, 120), (700, 150)]
+    #vertices= [(120, 200), (75, 150), (560, 120), (700, 150)]
+
+    #Footage 3
+    vertices= [(550, 440), (635, 400), (1050, 430), (1010, 480)]
+    
 
     yellow_color = (0, 255, 255, alpha)  # Yellow color with transparency (B, G, R, A)
 
