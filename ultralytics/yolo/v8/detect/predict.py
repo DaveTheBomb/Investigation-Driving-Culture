@@ -275,7 +275,37 @@ def estimatespeed(Location1, Location2, img, starting_time, ending_time):
     
     return int(speed)
 
+def determine_headlight_status(img, x1, y1, x2, y2, direction):
+    # Crop the region of interest (ROI) from the image using (x1, y1, x2, y2)
+    roi = img[y1:y2, x1:x2]
 
+    # Define color ranges for red, orange, and green
+    red_lower = np.array([0, 0, 100])
+    red_upper = np.array([0, 0, 255])
+    orange_lower = np.array([0, 100, 200])
+    orange_upper = np.array([80, 180, 255])
+
+    # Convert the ROI to HSV color space
+    hsv_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+    
+    # Threshold the ROI to get color regions
+    red_mask = cv2.inRange(hsv_roi, red_lower, red_upper)
+    orange_mask = cv2.inRange(hsv_roi, orange_lower, orange_upper)
+    # Calculate the percentage of red pixels in the ROI
+    total_pixels = roi.shape[0] * roi.shape[1]
+    red_pixel_percentage = (np.count_nonzero(red_mask) / total_pixels) * 100
+    orange_pixel_percentage = (np.count_nonzero(orange_mask) / total_pixels) * 100
+
+    if direction == "Northwest": #For footage 2. For footage 1 and 3, modify to north 
+        if red_pixel_percentage >= 5.0 or orange_pixel_percentage >= 5.0:  
+            headlight_status = "Taillights On"
+        else:
+            headlight_status = "Taillights Off"
+    else:
+        if red_pixel_percentage >= 1.0 or orange_pixel_percentage >= 1.0:  
+            headlight_status = "Headlights On"
+        else:
+            headlight_status = "Headlights Off"
 
 def init_tracker():
     global deepsort
@@ -446,7 +476,8 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
           #_, distance = get_region_and_distance(center, Roadline)
           #object_speed = estimatespeed(direction, distance)
           object_speed = estimatespeed(data_deque[id][1][0], data_deque[id][0][0], data_deque[id][1][1], data_deque[id][0][1])
-
+          if obj_name != "traffic light":
+             determine_headlight_status(img, x1, y1, x2, y2, direction)
           speed_line_queue[id].append(object_speed)
           if intersect(data_deque[id][0], data_deque[id][1], line[0], line[1]):
               color = (255, 255, 255)
