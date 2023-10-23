@@ -80,7 +80,7 @@ def draw_transparent_yellow_rhombus(img):
       cv2.line(img, start_point, end_point, line_color, line_thickness)
     
     return 
-
+"""
 def estimatespeed(Location1, Location2):
     #Euclidean Distance Formula
     d_pixel = math.sqrt(math.pow(Location2[0] - Location1[0], 2) + math.pow(Location2[1] - Location1[1], 2))
@@ -91,6 +91,51 @@ def estimatespeed(Location1, Location2):
     #distance = speed/time
     speed = d_meters * time_constant
     return int(speed)
+"""
+
+
+# Set the distance between the two virtual lines in meters
+#STARTING LINES 
+
+Roadline = [(300, 600), (430, 400), (860, 400), (1050, 600)] #Footage 1
+#Roadline = [(120, 200), (75, 150), (560, 120), (700, 150)] #Footage 2
+#Roadline = [(550, 440), (635, 400), (1050, 430), (1010, 480)] # Footage 3
+#Roadline = [(750, 570), (730, 400), (780, 400), (850, 570)] # Footage 4
+
+distance_between_lines = 20  # Adjust this value as needed
+
+import math
+# Function to calculate speed
+def estimatespeed(direction):
+    if direction == "South" : 
+        # Define the first two points in Roadline
+        point1 = Roadline[0]
+        point2 = Roadline[1]
+        # Calculate the distance using the Euclidean distance formula
+        distance = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
+    else:
+        point1 = Roadline[2]
+        point2 = Roadline[3]
+        # Calculate the distance using the Euclidean distance formula
+        distance = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
+        
+    try:
+        with open("time.txt", "r") as file:
+            start_time = float(file.read().strip())
+    except FileNotFoundError:
+        print("Error: 'time.txt' file not found.")
+        start_time = time.time()
+
+    # Simulate vehicle crossing the start and end lines
+    end_time = time.time()
+
+    # Calculate the time taken in seconds
+    time_taken = end_time - start_time
+    # Calculate the speed in meters per second (m/s)
+    speed = distance / time_taken
+    # Convert speed to kilometers per hour (km/h)
+    speed_kmph = speed * 3.6
+    return speed_kmph
 
 def init_tracker():
     global deepsort
@@ -239,10 +284,26 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
 
         # add center to buffer
         data_deque[id].appendleft(center)
+############################################################################
+        # Record the initial time and write it to the time.txt file
+        line_1  = (Roadline[0], Roadline[1])
+        line_2  = (Roadline[0], Roadline[1])
+
+        # Record the initial time and write it to the time.txt file
+        if intersect(center, line_1[0], line_1[1]) or intersect(center, line_2[0], line_2[1]):
+            initial_time = time.time()
+            with open("time.txt", "w") as file:
+                file.write(str(initial_time))
+        
+##############################################################################
+
 
         if len(data_deque[id]) >= 2:
           direction = get_direction(data_deque[id][0], data_deque[id][1])
-          object_speed = estimatespeed(data_deque[id][1], data_deque[id][0])
+          #object_speed = estimatespeed(data_deque[id][1], data_deque[id][0])
+          # Call the estimatespeed function within draw_boxes
+          object_speed = estimatespeed(direction, Roadline)
+
           speed_line_queue[id].append(object_speed)
           if intersect(data_deque[id][0], data_deque[id][1], line[0], line[1]):
               color = (255, 255, 255)
