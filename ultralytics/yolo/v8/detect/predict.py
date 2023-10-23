@@ -367,8 +367,11 @@ def capture_red_light_violations(id, img, x1, y1, x2, y2):
 ##########################################################################################
 #Detecting the traffic light 
 def detect_traffic_light_color(image, x1, y1, x2, y2):
-    # Crop the region of interest (ROI) from the image using (x1, y1, x2, y2)
-    roi = image[y1:y2, x1:x2]
+    # Remove the background using "rembg"
+    bg_removed_image = remove_background(image)
+    
+    # Crop the region of interest (ROI) from the bg-removed image using (x1, y1, x2, y2)
+    roi = bg_removed_image[y1:y2, x1:x2]
 
     # Define color ranges for red, orange, and green
     red_lower = np.array([0, 0, 100])
