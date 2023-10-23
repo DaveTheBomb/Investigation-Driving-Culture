@@ -306,6 +306,11 @@ def determine_headlight_status(img, x1, y1, x2, y2, direction):
             headlight_status = "Headlights On"
         else:
             headlight_status = "Headlights Off"
+    
+    color = (255, 255, 255)
+    text_x = int((x1 + x2) / 2)
+    text_y = y2 + 20
+    cv2.putText(img, headlight_status, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.3, color, 1, lineType=cv2.LINE_AA)
 
 def init_tracker():
     global deepsort
@@ -478,6 +483,7 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
           object_speed = estimatespeed(data_deque[id][1][0], data_deque[id][0][0], data_deque[id][1][1], data_deque[id][0][1])
           if obj_name != "traffic light":
              determine_headlight_status(img, x1, y1, x2, y2, direction)
+          
           speed_line_queue[id].append(object_speed)
           if intersect(data_deque[id][0], data_deque[id][1], line[0], line[1]):
               color = (255, 255, 255)
