@@ -173,7 +173,8 @@ def get_region_and_distance(center, roadlines):
 
     return regions, distances
 
-import math
+"""
+
 # Function to calculate speed
 def estimatespeed(direction, dist):
     if direction == "South" : 
@@ -211,6 +212,30 @@ def estimatespeed(direction, dist):
     # Convert speed to kilometers per hour (km/h)
     speed_kmph = speed * 3.6
     return speed_kmph
+
+"""
+import math
+def estimatespeed(Location1, Location2, img, starting_time, ending_time):
+     
+    # Calculate the Euclidean distance between Location1 and Location2
+    d_pixel = math.sqrt((Location2[0] - Location1[0]) ** 2 + (Location2[1] - Location1[1]) ** 2)
+
+    ppm = 38 # Footage 1
+  
+    # Convert the distance from pixels to meters
+    d_meters = d_pixel / ppm
+    
+
+    # Calculate the time difference in seconds
+    time_difference = ending_time - starting_time
+
+    # Calculate the speed in meters per second
+    speed = d_meters / time_difference
+    #Convert m/s to Km/hr
+    speed = speed*3.6
+    
+    return int(speed)
+
 
 
 def init_tracker():
@@ -379,8 +404,9 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
           direction = get_direction(data_deque[id][0], data_deque[id][1])
           #object_speed = estimatespeed(data_deque[id][1], data_deque[id][0])
           # Call the estimatespeed function within draw_boxes
-          _, distance = get_region_and_distance(center, Roadline)
-          object_speed = estimatespeed(direction, distance)
+          #_, distance = get_region_and_distance(center, Roadline)
+          #object_speed = estimatespeed(direction, distance)
+          object_speed = estimatespeed(data_deque[id][1][0], data_deque[id][0][0], data_deque[id][1][1], data_deque[id][0][1])
 
           speed_line_queue[id].append(object_speed)
           if intersect(data_deque[id][0], data_deque[id][1], line[0], line[1]):
