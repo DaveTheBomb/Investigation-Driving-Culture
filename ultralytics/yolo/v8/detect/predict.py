@@ -97,14 +97,15 @@ def estimatespeed(Location1, Location2):
 # Set the distance between the two virtual lines in meters
 #STARTING LINES 
 
-Roadline = [(300, 600), (430, 400), (860, 400), (1050, 600)] #Footage 1
+#Roadline = [(300, 600), (430, 400), (860, 400), (1050, 600)] #Footage 1
 #Roadline = [(120, 200), (75, 150), (560, 120), (700, 150)] #Footage 2
 #Roadline = [(550, 440), (635, 400), (1050, 430), (1010, 480)] # Footage 3
 #Roadline = [(750, 570), (730, 400), (780, 400), (850, 570)] # Footage 4
 
 #GRID-BASED METHODS 
 #Footage 1 
-lines_to_draw = [
+
+Roadline = [
     ((300, 600), (1050, 600)),
     ((350, 550), (1000, 550)),
      ((380, 500), (950, 500)),
@@ -115,6 +116,17 @@ lines_to_draw = [
      ((485, 250), (800, 250)),
      ((510, 200), (770, 200)),]
 
+#Footage 2
+"""
+Roadline = [
+    ((-15, 60), (360,60)),
+    ((30, 100), (450, 90)),
+    ((75, 150), (560,120)),
+    ((120, 200), (750, 150)),
+    
+]
+"""
+
 distance_between_lines = 20  # Adjust this value as needed
 
 import math
@@ -124,11 +136,36 @@ def estimatespeed(direction):
         # Define the first two points in Roadline
         point1 = Roadline[0]
         point2 = Roadline[1]
+
+        #Footage 1 (Grid-based Method)
+        line_1 = Roadline[0]
+        line_2 = Roadline[1]
+        line_3 = Roadline[2]
+        line_4 = Roadline[3]
+        line_5 = Roadline[4]
+        line_6 = Roadline[5]
+        line_7 = Roadline[6]
+        line_8 = Roadline[7]
+        line_9 = Roadline[8]
+
+            
         # Calculate the distance using the Euclidean distance formula
         distance = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
     else:
         point1 = Roadline[2]
         point2 = Roadline[3]
+
+         #Footage 1 (Grid-based Method)
+        line_1 = Roadline[0]
+        line_2 = Roadline[1]
+        line_3 = Roadline[2]
+        line_4 = Roadline[3]
+        line_5 = Roadline[4]
+        line_6 = Roadline[5]
+        line_7 = Roadline[6]
+        line_8 = Roadline[7]
+        line_9 = Roadline[8]
+
         # Calculate the distance using the Euclidean distance formula
         distance = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
         
