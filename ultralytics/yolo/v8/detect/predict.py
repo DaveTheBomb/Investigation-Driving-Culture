@@ -43,6 +43,32 @@ def HorizontalLine_After_Detection(img,line,color):
     cv2.line(img, line[0], line[1],color, 3)  # Test1 video
     cv2.line(img, line[0], line[1],color, 3)  # Stock video
 
+
+def draw_transparent_yellow_rhombus(img):
+    # Define the color of the filled rhombus in BGR-A format (yellow with transparency)
+    alpha=100
+    vertices = [(550, 440), (635, 400), (1050, 430), (1010, 480)]
+    yellow_color = (0, 255, 255, alpha)  # Yellow color with transparency (B, G, R, A)
+
+    # Convert the vertices to a NumPy array
+    vertices_np = np.array([vertices], dtype=np.int32)
+
+    # Create an image with a transparent yellow filled rhombus
+    filled_rhombus = np.zeros_like(img, dtype=np.uint8)
+    cv2.fillPoly(filled_rhombus, vertices_np, yellow_color)
+
+    # Blend the filled rhombus with the frame to add transparency
+    img = cv2.addWeighted(filled_rhombus, 1, img, 1, 0)
+    #Draw lines 
+    lines = [((500, 440),(1000, 480)), ((600, 390),(1100, 430))] 
+    line_color = [0, 0, 0]
+    for line in lines:
+      start_point, end_point = line
+      line_thickness = 2
+      cv2.line(img, start_point, end_point, line_color, line_thickness)
+    
+    return 
+
 def estimatespeed(Location1, Location2):
     #Euclidean Distance Formula
     d_pixel = math.sqrt(math.pow(Location2[0] - Location1[0], 2) + math.pow(Location2[1] - Location1[1], 2))
