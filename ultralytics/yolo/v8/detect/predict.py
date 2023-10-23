@@ -217,8 +217,36 @@ def estimatespeed(direction, dist):
 import math
 def estimatespeed(Location1, Location2, img, starting_time, ending_time):
      
-    # Calculate the Euclidean distance between Location1 and Location2
-    d_pixel = math.sqrt((Location2[0] - Location1[0]) ** 2 + (Location2[1] - Location1[1]) ** 2)
+     # Calculate the Euclidean distance between Location1 and Location2
+    #d_pixel = math.sqrt((Location2[0] - Location1[0]) ** 2 + (Location2[1] - Location1[1]) ** 2)
+
+    # Calculate the direction vector between Location1 and Location2 (Get the heright of the box)
+    direction_vector = np.array([Location2[0] - Location1[0], Location2[1] - Location1[1]])
+    # Calculate a perpendicular vector by swapping and negating the components 
+    perpendicular_vector = np.array([-direction_vector[1], direction_vector[0]])
+
+     # Calculate the magnitude of the perpendicular vector (To get width of the box)
+    perpendicular_magnitude = np.linalg.norm(perpendicular_vector)
+
+    # Check for zero magnitude to avoid division by zero
+    if perpendicular_magnitude < 1e-6:
+         return 0 
+    
+    # Calculate the starting and ending points for the perpendicular line
+    line_start = (int(Location1[0] + perpendicular_vector[0]), int(Location1[1] + perpendicular_vector[1]))
+    line_end = (int(Location2[0] + perpendicular_vector[0]), int(Location2[1] + perpendicular_vector[1]))
+    
+    # Use location1, Location2, line_start, line_end as a rectangle and apply perpendicular transformation
+    pts1 = np.float32([Location1, Location2, line_end, line_start])
+    pts2 = np.float32([[0, 0], [1, 0], [0, 600], [1, 600]])
+    matrix = cv2.getPerspectiveTransform(pts1, pts2)
+    result = cv2.warpPerspective(img, matrix, (200, 600))
+
+    if result.shape[1] >= result.shape[2]: #Check if width of transformed image is greater than the height
+        d_pixel = result.shape[1] 
+    else:
+        d_pixel = result.shape[2] 
+
 
     ppm = 38 # Footage 1
     #ppm = 42 # Footage 2 
