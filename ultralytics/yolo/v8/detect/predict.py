@@ -47,7 +47,9 @@ def HorizontalLine_After_Detection(img,line,color):
 def draw_transparent_yellow_rhombus(img):
     # Define the color of the filled rhombus in BGR-A format (yellow with transparency)
     alpha=100
-    vertices = [(550, 440), (635, 400), (1050, 430), (1010, 480)]
+    #vertices = [(550, 440), (635, 400), (1050, 430), (1010, 480]
+    #Footage 1
+    vertices = [(300, 600), (430, 400), (860, 400), (1050, 600)]
     yellow_color = (0, 255, 255, alpha)  # Yellow color with transparency (B, G, R, A)
 
     # Convert the vertices to a NumPy array
