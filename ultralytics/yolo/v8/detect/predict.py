@@ -20,6 +20,9 @@ from deep_sort_pytorch.deep_sort import DeepSort
 from collections import deque
 import numpy as np
 
+import requests
+from rembg import remove
+
 palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
 data_deque = {}
 
@@ -399,7 +402,19 @@ def detect_traffic_light_color(image, x1, y1, x2, y2):
         return "Green"
     else:
         return "Unknown"
+    
+    
+def remove_background(image_path):
+    # Use the "rembg" library to remove the background from the input image
+    with open(image_path, 'rb') as img_file:
+        input_image = img_file.read()
+        output = remove(input_image)
 
+    # Convert the output to a NumPy array and convert to BGR color space
+    nparr = np.frombuffer(output, np.uint8)
+    bg_removed_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    return bg_removed_image
 
 def init_tracker():
     global deepsort
