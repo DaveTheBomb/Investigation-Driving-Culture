@@ -518,7 +518,6 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
                 cv2.putText(img, f'Light: {traffic_light_color}', (x1, y2 +15), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
                             (255, 255, 255), 1, lineType=cv2.LINE_AA)
 
-        
 
         if len(data_deque[id]) >= 2:
           direction = get_direction(data_deque[id][0], data_deque[id][1])
