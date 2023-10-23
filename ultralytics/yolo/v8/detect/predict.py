@@ -221,6 +221,9 @@ def estimatespeed(Location1, Location2, img, starting_time, ending_time):
     d_pixel = math.sqrt((Location2[0] - Location1[0]) ** 2 + (Location2[1] - Location1[1]) ** 2)
 
     ppm = 38 # Footage 1
+    #ppm = 42 # Footage 2 
+    #ppm = 22 # Footage 3 
+    #ppm = 49 # Footage 4 
   
     # Convert the distance from pixels to meters
     d_meters = d_pixel / ppm
