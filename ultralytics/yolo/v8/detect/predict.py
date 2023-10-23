@@ -232,6 +232,9 @@ def estimatespeed(Location1, Location2, img, starting_time, ending_time):
     # Calculate the time difference in seconds
     time_difference = ending_time - starting_time
 
+    if time_difference == 0:
+        return 0
+
     # Calculate the speed in meters per second
     speed = d_meters / time_difference
     #Convert m/s to Km/hr
