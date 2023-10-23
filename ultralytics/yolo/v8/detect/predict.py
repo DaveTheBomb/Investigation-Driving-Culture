@@ -142,7 +142,15 @@ Roadline  = [
 ]
 """
 
-distance_between_lines = 20  # Adjust this value as needed
+#Footage 4
+"""
+lines_to_draw = [
+    ((660, 570), (660,400)),
+    ((750, 570), (730,400)),
+    ((780, 400), (850, 570)),
+    ((830, 400), (950, 570))
+ """  
+
 
 import math
 # Function to calculate speed
