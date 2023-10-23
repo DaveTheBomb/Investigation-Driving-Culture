@@ -312,6 +312,45 @@ def determine_headlight_status(img, x1, y1, x2, y2, direction):
     text_y = y2 + 20
     cv2.putText(img, headlight_status, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.3, color, 1, lineType=cv2.LINE_AA)
 
+#Detecting the traffic light 
+def detect_traffic_light_color(image, x1, y1, x2, y2):
+    # Crop the region of interest (ROI) from the image using (x1, y1, x2, y2)
+    roi = image[y1:y2, x1:x2]
+
+    # Define color ranges for red, orange, and green
+    red_lower = np.array([0, 0, 100])
+    red_upper = np.array([100, 100, 255])
+    
+    orange_lower = np.array([0, 100, 200])
+    orange_upper = np.array([80, 180, 255])
+    
+    green_lower = np.array([0, 100, 0])
+    green_upper = np.array([80, 255, 80])
+    
+    # Convert the ROI to HSV color space
+    hsv_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
+    
+    # Threshold the ROI to get color regions
+    red_mask = cv2.inRange(hsv_roi, red_lower, red_upper)
+    orange_mask = cv2.inRange(hsv_roi, orange_lower, orange_upper)
+    green_mask = cv2.inRange(hsv_roi, green_lower, green_upper)
+    
+    # Count the number of non-zero pixels in each mask
+    red_pixel_count = np.count_nonzero(red_mask)
+    orange_pixel_count = np.count_nonzero(orange_mask)
+    green_pixel_count = np.count_nonzero(green_mask)
+    
+    # Determine the detected color based on the pixel counts
+    if red_pixel_count > orange_pixel_count and red_pixel_count > green_pixel_count:
+        return "Red"
+    elif orange_pixel_count > red_pixel_count and orange_pixel_count > green_pixel_count:
+        return "Orange"
+    elif green_pixel_count > red_pixel_count and green_pixel_count > orange_pixel_count:
+        return "Green"
+    else:
+        return "Unknown"
+
+
 def init_tracker():
     global deepsort
     cfg_deep = get_config()
@@ -472,7 +511,14 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
                 file.write(str(initial_time))
         
 ##############################################################################
+         # Display the traffic light color next to the traffic light
+        if obj_name == "traffic light":
+            traffic_light_color = detect_traffic_light_color(img, x1, y1, x2, y2)
+            if traffic_light_color:
+                cv2.putText(img, f'Light: {traffic_light_color}', (x1, y2 +15), cv2.FONT_HERSHEY_SIMPLEX, 0.3,
+                            (255, 255, 255), 1, lineType=cv2.LINE_AA)
 
+        
 
         if len(data_deque[id]) >= 2:
           direction = get_direction(data_deque[id][0], data_deque[id][1])
