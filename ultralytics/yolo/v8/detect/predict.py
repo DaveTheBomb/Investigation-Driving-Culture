@@ -284,8 +284,9 @@ def estimatespeed(Location1, Location2, img, starting_time, ending_time):
     return int(speed)
 
 def determine_headlight_status(img, x1, y1, x2, y2, direction):
-    # Crop the region of interest (ROI) from the image using (x1, y1, x2, y2)
-    roi = img[y1:y2, x1:x2]
+    bg_removed_image = remove_background(image)
+    # Crop the region of interest (ROI) from the bg-removed image using (x1, y1, x2, y2)
+    roi = bg_removed_image[y1:y2, x1:x2]
 
     # Define color ranges for red, orange, and green
     red_lower = np.array([0, 0, 100])
