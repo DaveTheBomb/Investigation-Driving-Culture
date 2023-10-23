@@ -8,7 +8,8 @@ import cv2
 import torch
 import torch.backends.cudnn as cudnn
 from numpy import random
-from ultralytics.yolo.engine.predictor import BasePredictor
+from predictor import BasePredictor
+import os
 from ultralytics.yolo.utils import DEFAULT_CONFIG, ROOT, ops
 from ultralytics.yolo.utils.checks import check_imgsz
 from ultralytics.yolo.utils.plotting import Annotator, colors, save_one_box
@@ -256,9 +257,13 @@ def estimatespeed(Location1, Location2, img, starting_time, ending_time):
     # Convert the distance from pixels to meters
     d_meters = d_pixel / ppm
     
+    # Calculate the time difference in seconds
+    with open(os.path.join("Process_Delay.txt"), "r") as delay_file:
+        # Read the processing delay from the file (assuming it contains a single float value per line)
+        processing_delay_ms = float(delay_file.readline().strip())
 
     # Calculate the time difference in seconds
-    time_difference = ending_time - starting_time
+    time_difference = ending_time - starting_time - (processing_delay_ms / 1000)  # Subtract the process delay in seconds (converted from milliseconds)
 
     if time_difference == 0:
         return 0
