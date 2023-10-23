@@ -150,48 +150,50 @@ lines_to_draw = [
     ((780, 400), (850, 570)),
     ((830, 400), (950, 570))
  """  
+def calculate_distance(center, point1, point2):
+    # Calculate the distance between the vehicle's center and the line segment defined by point1 and point2
+    # Use your distance calculation method here, for example, Euclidean distance
+    # Calculate distance from the center to the line segment
+    x1, y1 = point1
+    x2, y2 = point2
+    x, y = center
+    distance = abs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1) / math.sqrt((y2 - y1)**2 + (x2 - x1)**2)
+    return distance
 
+def get_region_and_distance(center, roadlines):
+    # Define the regions using the provided roadlines
+    regions = ['Region 1', 'Region 2', 'Region 3', 'Region 4', 'Region 5', 'Region 6', 'Region 7', 'Region 8', 'Region 9']
+    distances = [None] * len(regions)
+
+    for i in range(len(roadlines)):
+        line = roadlines[i]
+        if intersect(center, line[0], line[1]):
+            # Vehicle is in the current region
+            distances[i] = calculate_distance(center, line[0], line[1])
+
+    return regions, distances
 
 import math
 # Function to calculate speed
-def estimatespeed(direction):
+def estimatespeed(direction, dist):
     if direction == "South" : 
         # Define the first two points in Roadline
         point1 = Roadline[0]
         point2 = Roadline[1]
 
-        #Footage 1 (Grid-based Method)
-        line_1 = Roadline[0]
-        line_2 = Roadline[1]
-        line_3 = Roadline[2]
-        line_4 = Roadline[3]
-        line_5 = Roadline[4]
-        line_6 = Roadline[5]
-        line_7 = Roadline[6]
-        line_8 = Roadline[7]
-        line_9 = Roadline[8]
-
-            
+        
         # Calculate the distance using the Euclidean distance formula
-        distance = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
+        #distance = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
     else:
         point1 = Roadline[2]
         point2 = Roadline[3]
 
-         #Footage 1 (Grid-based Method)
-        line_1 = Roadline[0]
-        line_2 = Roadline[1]
-        line_3 = Roadline[2]
-        line_4 = Roadline[3]
-        line_5 = Roadline[4]
-        line_6 = Roadline[5]
-        line_7 = Roadline[6]
-        line_8 = Roadline[7]
-        line_9 = Roadline[8]
+        
 
         # Calculate the distance using the Euclidean distance formula
-        distance = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
+       # distance = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
         
+    distance  = dist
     try:
         with open("time.txt", "r") as file:
             start_time = float(file.read().strip())
@@ -344,6 +346,7 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
 
         # code to find center of bottom edge
         center = (int((x2+x1)/ 2), int((y2+y2)/2))
+      
 
         # get ID of object
         id = int(identities[i]) if identities is not None else 0
@@ -376,7 +379,8 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
           direction = get_direction(data_deque[id][0], data_deque[id][1])
           #object_speed = estimatespeed(data_deque[id][1], data_deque[id][0])
           # Call the estimatespeed function within draw_boxes
-          object_speed = estimatespeed(direction, Roadline)
+          _, distance = get_region_and_distance(center, Roadline)
+          object_speed = estimatespeed(direction, distance)
 
           speed_line_queue[id].append(object_speed)
           if intersect(data_deque[id][0], data_deque[id][1], line[0], line[1]):
