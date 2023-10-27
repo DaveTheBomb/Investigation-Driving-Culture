@@ -30,8 +30,8 @@ def perspective_transform(image_path, coordinates):
 
 
     # Display the original and transformed images
-    cv2.imshow("Original Image", image)
-    cv2.imshow("Bird's Eye View", result)
+    cv2.imwrite("Original Image", image)
+    cv2.imwrite("Bird's Eye View", result)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
